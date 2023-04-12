@@ -1,0 +1,37 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": [
+      "open",
+      "high",
+      "low",
+      "close",
+      "adjclose",
+      "volume",
+      "ticker"
+    ],
+    "properties": {
+      "open": {
+        "bsonType": "double"
+      },
+      "high": {
+        "bsonType": "double"
+      },
+      "low": {
+        "bsonType": "double"
+      },
+      "close": {
+        "bsonType": "double"
+      },
+      "adjclose": {
+        "bsonType": "double"
+      },
+      "volume": {
+        "bsonType": "long"
+      },
+      "ticker": {
+        "bsonType": "string"
+      }
+    }
+  }
+}
