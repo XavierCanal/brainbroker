@@ -33,3 +33,17 @@ def aggregateCompany(company, data_dict):
         logging.error("Failed to update company", exc_info=True)
         return "Failed to update company"
 
+
+def get(name):
+    # Get the collection
+    try:
+        col = db_client.BrainBroker.historical;
+        # First we check if the collection exists with the index name inside the document
+        data = col.find_one({"index": name})
+        if data:
+            return {"ticket": data["index"], "data": data["data"]}
+        else:
+            return "Company not found"
+    except Exception:
+        logging.error("Failed to get company", exc_info=True)
+        return "Failed to get company"
