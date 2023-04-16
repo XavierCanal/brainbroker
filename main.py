@@ -92,8 +92,10 @@ def checkTickers():
 if __name__ == "__main__":
     from waitress import serve
     setupLogger()
-    checkTickers()
+    if(checkTickers()):
+        logging.info("🚀🚀 Server started 🚀🚀")
+        serve(app, host="0.0.0.0", port=5050)
+    else:
+        logging.error("❌❌ Failed to start server ❌❌")
+        logging.info("💀 Stopping server... 💀")
 
-    logging.info("🚀🚀 Server started 🚀🚀")
-    serve(app, host="0.0.0.0", port=5050)
-    logging.info("💀 Stopping server... 💀")

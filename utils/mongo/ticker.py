@@ -11,15 +11,11 @@ URL_TICKERS = "https://raw.githubusercontent.com/shilewenuw/get_all_tickers/mast
 
 
 def is_updated():
-    try:
-        col = db_client.BrainBroker.ticker;
-        # First we check if the collection exists with the index name inside the document
-        if col.count_documents({}) > 0:
-            return True
-        else:
-            return False
-    except Exception:
-        logging.error("Failed to check if the database is updated", exc_info=True)
+    col = db_client.BrainBroker.ticker
+    # First we check if the collection exists with the index name inside the document
+    if col.count_documents({}) > 0:
+        return True
+    else:
         return False
 
 
