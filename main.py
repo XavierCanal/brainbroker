@@ -28,6 +28,8 @@ def update_companies():
         else:
             df = st.get()
             df['data'] = df.index
+            df.rename(columns={'Open': 'open', 'High': 'high', 'Low': 'low',
+                               'Adj Close': 'adjclose', 'Close': 'close', 'Volume': 'volume'}, inplace=True)
             data_dict = df.to_dict('records')
 
             result.append(historical.aggregateCompany(company, data_dict, st))
@@ -52,18 +54,28 @@ def aggregateCompaniesWithCustomFilter():
     source: https://www.qmr.ai/wp-content/uploads/2022/08/image-23.png
     :return:
     """
+    result = []
     for ticker in request.json['tickers']:
         logging.info(" Updating company %s" % ticker + "|| Start: " + str(datetime.now()))
         st = Stock(ticker, request.json['start_date'], request.json['end_date'], request.json['interval'])
         if historical.stock_info_already_exists(ticker, st):
+            result.append("The information of the company %s already exists" % ticker)
             logging.info("The information of the company %s already exists" % ticker)
+        elif not st.validRange():
+            result.append(
+                "The information of the company %s was not updated because the date range is not valid" % ticker)
         else:
             df = st.get()
+            if df.empty:
+                result.append("The information of the company %s was not updated because the data is empty" % ticker)
+                continue
             df['data'] = df.index
             data_dict = df.to_dict('records')
-
             historical.aggregateCompany(ticker, data_dict, st)
+
+            result.append("The information of the company %s was updated" % ticker)
         logging.info(" End: " + str(datetime.now()))
+    return result
 
 
 def setupLogger():
@@ -86,16 +98,16 @@ def checkTickers():
     This function will check if the tickers are in the database, if not, it will add them
     :return:
     """
-    is_ticker_updated()
+    return is_ticker_updated()
 
 
 if __name__ == "__main__":
     from waitress import serve
+
     setupLogger()
-    if(checkTickers()):
+    if checkTickers():
         logging.info("🚀🚀 Server started 🚀🚀")
         serve(app, host="0.0.0.0", port=5050)
     else:
         logging.error("❌❌ Failed to start server ❌❌")
         logging.info("💀 Stopping server... 💀")
-

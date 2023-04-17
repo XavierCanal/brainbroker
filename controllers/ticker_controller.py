@@ -13,7 +13,7 @@ def is_updated():
             return True
 
         logging.info(" Database is not updated, updating")
-        ticker.update_tickers()
+        return ticker.update_tickers()
     except ServerSelectionTimeoutError:
         logging.error(" Failed to connect to the database", exc_info=True)
         return False
