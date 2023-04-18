@@ -3,7 +3,7 @@ import logging
 import sys
 from utils.mongo import historical
 from controllers.historical_controller import get_company
-from controllers.ticker_controller import ticker_exists
+from controllers.ticker_list_controller import ticker_exists
 from models.Stock import Stock
 from datetime import datetime
 
@@ -77,6 +77,8 @@ def aggregateCompaniesWithCustomFilter():
                 result.append("The information of the company %s was not updated because the data is empty" % ticker)
                 continue
             df['data'] = df.index
+            df.rename(columns={'Open': 'open', 'High': 'high', 'Low': 'low',
+                               'Adj Close': 'adjclose', 'Close': 'close', 'Volume': 'volume'}, inplace=True)
             data_dict = df.to_dict('records')
             historical.aggregateCompany(ticker, data_dict, st)
 

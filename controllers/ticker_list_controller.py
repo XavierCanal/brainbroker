@@ -2,7 +2,7 @@ import logging
 
 from pymongo.errors import ServerSelectionTimeoutError
 
-import utils.mongo.ticker as ticker
+import utils.mongo.ticker_list as ticker
 
 
 def is_updated():
@@ -28,4 +28,13 @@ def ticker_exists(ticker_name):
         return ticker.find_ticker(ticker_name)
     except Exception:
         logging.error(" Failed to check if ticker exists", exc_info=True)
+        return False
+
+
+def get_tickers():
+    try:
+        logging.info(" Getting all tickers")
+        return ticker.get_tickers()
+    except Exception:
+        logging.error(" Failed to get tickers", exc_info=True)
         return False

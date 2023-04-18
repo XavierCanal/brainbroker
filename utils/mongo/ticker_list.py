@@ -11,7 +11,7 @@ URL_TICKERS = "https://raw.githubusercontent.com/shilewenuw/get_all_tickers/mast
 
 
 def is_updated():
-    col = db_client.BrainBroker.ticker
+    col = db_client.BrainBroker.ticker_list
     # First we check if the collection exists with the index name inside the document
     if col.count_documents({}) > 0:
         return True
@@ -21,7 +21,7 @@ def is_updated():
 
 def update_tickers():
     try:
-        col = db_client.BrainBroker.ticker
+        col = db_client.BrainBroker.ticker_list
         # First we check if the collection exists with the index name inside the document
         df = pd.read_csv(URL_TICKERS, index_col=0)
         # Now we insert the df.index (array) into the collection
@@ -35,7 +35,7 @@ def update_tickers():
 
 def find_ticker(ticker_name):
     try:
-        col = db_client.BrainBroker.ticker
+        col = db_client.BrainBroker.ticker_list
         # We check if the collection exists with the index name inside the document
         if col.find_one({"list": ticker_name}):
             return True
@@ -43,4 +43,17 @@ def find_ticker(ticker_name):
             return False
     except Exception:
         logging.error("Failed to find ticker", exc_info=True)
+        return False
+
+
+def get_tickers():
+    try:
+        col = db_client.BrainBroker.ticker_list
+        # We check if the collection exists with the index name inside the document
+        if col.find_one({}):
+            return col.find_one({})["list"]
+        else:
+            return False
+    except Exception:
+        logging.error("Failed to get tickers", exc_info=True)
         return False

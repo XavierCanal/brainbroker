@@ -3,12 +3,14 @@ import logging
 import sys
 from utils.mongo import historical
 from controllers.historical_controller import get_company
-from controllers.ticker_controller import is_updated as is_ticker_updated
+from controllers.ticker_list_controller import is_updated as is_ticker_updated
 from routes.company_routes import company_routes
+from routes.ticker_list_routes import ticker_list_routes
 
 app = Flask(__name__)
 
 app.register_blueprint(company_routes)
+app.register_blueprint(ticker_list_routes)
 
 
 def setupLogger():
@@ -39,7 +41,7 @@ if __name__ == "__main__":
 
     setupLogger()
     if checkTickers():
-        logging.info("🚀🚀 Server started 🚀🚀")
+        logging.info(" 🚀🚀 Server started 🚀🚀")
         serve(app, host="0.0.0.0", port=5050)
     else:
         logging.error("❌❌ Failed to start server ❌❌")
