@@ -31,3 +31,16 @@ def update_tickers():
     except Exception:
         logging.error("Failed to update tickers", exc_info=True)
         return False
+
+
+def find_ticker(ticker_name):
+    try:
+        col = db_client.BrainBroker.ticker
+        # We check if the collection exists with the index name inside the document
+        if col.find_one({"list": ticker_name}):
+            return True
+        else:
+            return False
+    except Exception:
+        logging.error("Failed to find ticker", exc_info=True)
+        return False

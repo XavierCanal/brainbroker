@@ -20,3 +20,12 @@ def is_updated():
     except Exception:
         logging.error(" Failed to check if the database is updated", exc_info=True)
         return False
+
+
+def ticker_exists(ticker_name):
+    try:
+        logging.info(" Checking if ticker %s exists", ticker)
+        return ticker.find_ticker(ticker_name)
+    except Exception:
+        logging.error(" Failed to check if ticker exists", exc_info=True)
+        return False
