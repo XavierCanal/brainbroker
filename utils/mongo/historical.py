@@ -56,7 +56,8 @@ def stock_info_already_exists(company, st: Stock):
         if col.find_one({"index": company}):
             # If it exists, we update the document
             for stock in col.find_one({"index": company})["data"]:
-                if stock["info"]["start_date"] == st.start_date and stock["info"]["end_date"] == st.end_date \
+                if stock["info"]["start_date"].strftime("%Y-%m-%d") == st.start_date.strftime("%Y-%m-%d") \
+                        and stock["info"]["end_date"].strftime("%Y-%m-%d") == st.end_date.strftime("%Y-%m-%d") \
                         and stock["info"]["interval"] == st.interval:
                     return True
             return False

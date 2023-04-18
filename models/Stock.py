@@ -11,7 +11,7 @@ from models.enums.yahoo_data_restrictions import Restrictions
 
 
 class Stock:
-    def __init__(self, ticker, start_date, end_date, interval="ONE_DAY"):
+    def __init__(self, ticker, start_date="", end_date="", interval="ONE_DAY"):
         self.ticker = ticker
         if end_date == "":
             self.end_date = datetime.today()
@@ -35,6 +35,10 @@ class Stock:
             "interval": self.interval
         }
 
+    """
+    This function will check if the stock is valid
+    @:returns True if the stock is valid, False otherwise
+    """
     def validRange(self):
         try:
             logging.info("Validating range")
@@ -49,6 +53,10 @@ class Stock:
             logging.exception("Failed to validate range", exc_info=True)
             return False
 
+    """
+    This function will get the stock information from yahoo finance
+    @:returns a pandas dataframe with the stock information
+    """
     def get(self):
         try:
             print(self.ticker, self.start_date, self.end_date, self.interval)
