@@ -1,11 +1,13 @@
 from flask import Blueprint, request, jsonify, Flask
 import logging
 import sys
+
+from models.enums.yahoo_data_restrictions import Restrictions
 from utils.mongo import historical
 from controllers.historical_controller import get_company
 from controllers.ticker_list_controller import ticker_exists
 from models.Stock import Stock
-from datetime import datetime
+from datetime import datetime, timedelta
 
 company_routes = Blueprint('company_routes', __name__)
 
@@ -81,6 +83,48 @@ def aggregateCompaniesWithCustomFilter():
                                'Adj Close': 'adjclose', 'Close': 'close', 'Volume': 'volume'}, inplace=True)
             data_dict = df.to_dict('records')
             historical.aggregateCompany(ticker, data_dict, st)
+
+            result.append("The information of the company %s was updated" % ticker)
+        logging.info(" End: " + str(datetime.now()))
+    return result
+
+
+@company_routes.route('/aggregateAllHistorical', methods=['POST'])
+def aggregateAllHistorical():
+    """
+    This function will update all the companies in the database, using yahoo finances, we use get_data, that
+    gives us the data from the company from x year to y year with intervals of 1 day
+    :return:
+    """
+    result = []
+    for ticker in request.json['tickers']:
+        if not ticker_exists(ticker):
+            result.append("The company %s does not exist" % ticker)
+            continue
+        logging.info(" Updating company %s" % ticker + " || Start: " + str(datetime.now()))
+        st = Stock(ticker)
+        if historical.stock_info_already_exists(ticker, st):
+            result.append("The information of the company %s already exists" % ticker)
+            logging.info("The information of the company %s already exists" % ticker)
+        else:
+            st.set_start_date(Restrictions[request.json['interval']].get_datetime_delta())
+            st.set_interval(Restrictions[request.json['interval']].value["key"])
+
+            logging.info("Updating company %s with start date %s, end date %s and interval %s" %
+                         (ticker, st.start_date, st.end_date, st.interval))
+
+            start_date = st.start_date
+
+            while start_date < st.end_date:
+                end_date = start_date + timedelta(days=730)
+                print("Start date: %s, end date: %s" % (start_date, end_date))
+                df = st.get(start_date, end_date)
+                df['data'] = df.index
+                df.rename(columns={'Open': 'open', 'High': 'high', 'Low': 'low',
+                                   'Adj Close': 'adjclose', 'Close': 'close', 'Volume': 'volume'}, inplace=True)
+                data_dict = df.to_dict('records')
+                historical.aggregateCompany(ticker, data_dict, st)
+                start_date = end_date
 
             result.append("The information of the company %s was updated" % ticker)
         logging.info(" End: " + str(datetime.now()))

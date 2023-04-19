@@ -23,7 +23,11 @@ def aggregateCompany(company, data_dict, st: Stock):
         # First we check if the collection exists with the index name inside the document
         if col.find_one({"index": company}):
             # If it exists, we update the document
-            col.update_one({"index": company}, {"$push": {"data": {"info": st.toJSON(), "candlesticks": data_dict}}})
+            if st.interval == "1h":
+                col.update_one({"index": company, "data.info.interval": st.toJSON().get("interval")},
+                               {"$push": {"data.$.candlesticks": {"$each": data_dict}}})
+            else:
+                col.update_one({"index": company}, {"$push": {"data": {"info": st.toJSON(), "candlesticks": data_dict}}})
             return "Updated company %s", company
         else:
             # If it doesn't exist, we create a new document

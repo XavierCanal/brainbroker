@@ -27,6 +27,15 @@ class Stock:
     def __str__(self):
         return self.ticker + "-" + self.start_date.__str__() + "-" + self.end_date.__str__() + "-" + self.interval
 
+    def set_end_date(self, end_date):
+        self.end_date = end_date
+
+    def set_start_date(self, start_date):
+        self.start_date = start_date
+
+    def set_interval(self, interval):
+        self.interval = interval
+
     def toJSON(self):
         return {
             "ticker": self.ticker,
@@ -57,10 +66,15 @@ class Stock:
     This function will get the stock information from yahoo finance
     @:returns a pandas dataframe with the stock information
     """
-    def get(self):
+    def get(self, start_date=None, end_date=None):
         try:
-            print(self.ticker, self.start_date, self.end_date, self.interval)
-            stock = yf2.download(self.ticker, start=self.start_date, end=self.end_date, interval=self.interval)
+            if start_date is None:
+                start_date = self.start_date
+            if end_date is None:
+                end_date = self.end_date
+
+            print(self.ticker, start_date, end_date, self.interval)
+            stock = yf2.download(self.ticker, start=start_date, end=end_date, interval=self.interval)
             print(stock)
             return stock
         except Exception:
