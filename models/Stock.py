@@ -7,11 +7,14 @@ import logging
 import yahoo_fin.stock_info as yf
 import yfinance as yf2
 from datetime import datetime
+
+from models.Candlestick import Candlestick
 from models.enums.yahoo_data_restrictions import Restrictions
 
 
-class Stock:
+class Stock(Candlestick):
     def __init__(self, ticker, start_date="", end_date="", interval="ONE_DAY"):
+        super().__init__(start_date, end_date, interval)
         self.ticker = ticker
         if end_date == "":
             self.end_date = datetime.today()
@@ -23,6 +26,10 @@ class Stock:
             self.start_date = datetime.strptime(start_date, "%Y-%m-%d")
         self.interval = Restrictions[interval].value["key"]
         self.interval_enum = interval
+
+    # TODO: Fix this class extending Candlestick, and make it work with the new Candlestick class
+    # Maybe we can use the same class for both stocks and crypto
+    # and we need to unify the way we get the data from yahoo finance and binance
 
     def __str__(self):
         return self.ticker + "-" + self.start_date.__str__() + "-" + self.end_date.__str__() + "-" + self.interval
@@ -48,6 +55,7 @@ class Stock:
     This function will check if the stock is valid
     @:returns True if the stock is valid, False otherwise
     """
+
     def validRange(self):
         try:
             logging.info("Validating range")
@@ -66,6 +74,7 @@ class Stock:
     This function will get the stock information from yahoo finance
     @:returns a pandas dataframe with the stock information
     """
+
     def get(self, start_date=None, end_date=None):
         try:
             if start_date is None:

@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, Flask
+from flask import Blueprint, request, jsonify, Flask, Response
 import logging
 import sys
 
@@ -36,8 +36,9 @@ def update_companies():
             df.rename(columns={'Open': 'open', 'High': 'high', 'Low': 'low',
                                'Adj Close': 'adjclose', 'Close': 'close', 'Volume': 'volume'}, inplace=True)
             data_dict = df.to_dict('records')
-
-            result.append(historical.aggregateCompany(ticker, data_dict, st))
+            outcome = historical.aggregateCompany(ticker, data_dict, st)
+            if outcome is False: return Response("Error", status=500, mimetype='application/json')
+            result.append(outcome)
         logging.info(" End: " + str(datetime.now()))
     return result
 

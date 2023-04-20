@@ -33,9 +33,9 @@ def aggregateCompany(company, data_dict, st: Stock):
             # If it doesn't exist, we create a new document
             col.insert_one({"index": company, "data": [{"info": st.toJSON(), "candlesticks": data_dict}]})
             return "Created company %s", company
-    except Exception:
-        logging.error(" Failed to update company", exc_info=True)
-        return "Failed to update company %s", company
+    except Exception as e:
+        logging.error(" Failed to update company:" + str(e) , exc_info=True)
+        return False
 
 
 def get(name):

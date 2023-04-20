@@ -6,11 +6,16 @@ from controllers.historical_controller import get_company
 from controllers.ticker_list_controller import is_updated as is_ticker_updated
 from routes.company_routes import company_routes
 from routes.ticker_list_routes import ticker_list_routes
+from routes.binance_routes import binance_routes
+from controllers import binance_controller as binance
 
 app = Flask(__name__)
 
 app.register_blueprint(company_routes)
 app.register_blueprint(ticker_list_routes)
+
+# Binance api registers
+app.register_blueprint(binance_routes)
 
 
 def setupLogger():
@@ -36,11 +41,19 @@ def checkTickers():
     return is_ticker_updated()
 
 
+def checkSymbols():
+    """
+    This function will check if the symbols are in the database, if not, it will add them
+    :return:
+    """
+    return binance.is_updated()
+
+
 if __name__ == "__main__":
     from waitress import serve
 
     setupLogger()
-    if checkTickers():
+    if checkTickers() and checkSymbols():
         logging.info(" 🚀🚀 Server started 🚀🚀")
         serve(app, host="0.0.0.0", port=5050)
     else:

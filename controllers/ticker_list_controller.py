@@ -7,18 +7,18 @@ import utils.mongo.ticker_list as ticker
 
 def is_updated():
     try:
-        logging.info(" Checking if the database is updated...")
+        logging.info(" Checking if the tickers are updated...")
         if ticker.is_updated():
-            logging.info(" Database is updated!!")
+            logging.info(" The tickers are updated!!")
             return True
 
-        logging.info(" Database is not updated, updating")
+        logging.info(" The tickers aren't updated, updating")
         return ticker.update_tickers()
     except ServerSelectionTimeoutError:
         logging.error(" Failed to connect to the database", exc_info=True)
         return False
     except Exception:
-        logging.error(" Failed to check if the database is updated", exc_info=True)
+        logging.error(" Failed to check if the tickers are updated", exc_info=True)
         return False
 
 
