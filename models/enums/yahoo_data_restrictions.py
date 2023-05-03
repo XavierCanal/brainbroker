@@ -13,8 +13,8 @@ class Restrictions(Enum):
     NINETY_MINUTES = {"days": 60, "key": "90m"}
     ONE_HOUR = {"days": 730, "key": "1h"}
     ONE_DAY = {"days": 100000, "key": "1d"}
-    ONE_WEEK = {"days": 100000, "key": "1wk"}
-    ONE_MONTH = {"days": 100000, "key": "1mo"}
+    ONE_WEEK = {"days": 100000, "key": "1w"}
+    ONE_MONTH = {"days": 100000, "key": "1M"}
     ONE_YEAR = {"days": 100000, "key": "1y"}
 
     def get_datetime_delta(self):
@@ -23,4 +23,11 @@ class Restrictions(Enum):
         today = datetime.datetime.today()
         d = datetime.timedelta(days=(self.value["days"] - 1))
         a = today - d
+        return a
+
+    def get_interval_end_date(self, start_date):
+        if self.value["days"] == 100000:
+            return datetime.datetime.today()
+        d = datetime.timedelta(days=(self.value["days"] - 1))
+        a = start_date + d
         return a
