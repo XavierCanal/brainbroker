@@ -115,11 +115,28 @@ def update_completed_status(company):
 def get(name):
     # Get the collection
     try:
-        col = db_client.BrainBroker.historical;
+        col = db_client.BrainBroker.historical
         # First we check if the collection exists with the index name inside the document
         data = col.find_one({"index": name})
         if data:
             return {"ticket": data["index"], "data": data["data"]}
+        else:
+            return "Company not found"
+    except Exception:
+        logging.error("Failed to get company", exc_info=True)
+        return "Failed to get company"
+
+
+def get_custom_interval(name, interval):
+    # Get the collection
+    try:
+        col = db_client.BrainBroker.historical
+        # First we check if the collection exists with the index name inside the document
+        data = col.find_one({"index": name})
+        if data:
+            for stock in data["data"]:
+                if stock["info"]["interval"] == interval:
+                    return {"ticket": data["index"], "data": stock["candlesticks"]}
         else:
             return "Company not found"
     except Exception:

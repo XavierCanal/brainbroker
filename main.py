@@ -7,7 +7,9 @@ from controllers.ticker_list_controller import is_updated as is_ticker_updated
 from routes.company_routes import company_routes
 from routes.ticker_list_routes import ticker_list_routes
 from routes.binance_routes import binance_routes
+from routes.plot_routes import plot_routes
 from controllers import binance_controller as binance
+
 
 app = Flask(__name__)
 
@@ -16,6 +18,9 @@ app.register_blueprint(ticker_list_routes)
 
 # Binance api registers
 app.register_blueprint(binance_routes)
+
+# Plot routes
+app.register_blueprint(plot_routes)
 
 
 def setupLogger():

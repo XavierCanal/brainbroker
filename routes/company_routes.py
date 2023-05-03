@@ -4,7 +4,7 @@ import sys
 
 from models.enums.yahoo_data_restrictions import Restrictions
 from utils.mongo import historical
-from controllers.historical_controller import get_company
+from controllers import historical_controller
 from controllers.ticker_list_controller import ticker_exists
 from models.Stock import Stock
 from datetime import datetime, timedelta
@@ -45,7 +45,19 @@ def update_companies():
 
 @company_routes.route('/getCompany/<string:name>', methods=['GET'])
 def get_company_by_name(name):
-    return get_company(name)
+    return historical_controller.get_company(name)
+
+
+@company_routes.route('/getCompany/<string:regex>', methods=['GET'])
+def get_company_by_name(regex):
+    # TODO: Implement this, it should return a list of companies that match the regex
+    return "Not implemented yet"
+
+
+@company_routes.route('/getCompanyInterval/<string:name>/<string:interval>', methods=['GET'])
+def get_company_by_interval(name, interval):
+    response = historical_controller.get_company_interval(name, interval)
+    return Response(response, status=200, mimetype='application/json')
 
 
 @company_routes.route('/aggregateCustomCompanies', methods=['POST'])
