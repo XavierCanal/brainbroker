@@ -72,3 +72,25 @@ def update_symbols():
     except Exception:
         logging.error("Failed to update tickers", exc_info=True)
         return False
+
+
+def symbol_exists(sy):
+    """
+    This function will check if the symbol exists in the database
+    :param sy:
+    :return:
+    """
+    try:
+        col = db_client.BrainBroker.symbols_list
+        # We check if the collection exists with the index name inside the document
+        if col.find_one({}):
+            symbols = col.find_one({})["list"]
+            if sy in symbols:
+                return True
+            else:
+                return False
+        else:
+            return False
+    except Exception:
+        logging.error("Failed to check if symbol exists", exc_info=True)
+        return False

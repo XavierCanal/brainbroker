@@ -3,7 +3,7 @@ import logging
 from pymongo.errors import ServerSelectionTimeoutError
 
 import utils.mongo.symbol_list as symbol
-import models.Symbol as Symbol
+import models.Stock as Stock
 
 
 def is_updated():
@@ -47,10 +47,22 @@ def get_symbols(symbol_regex: None):
         return False
 
 
-def aggregate_symbol(sy: Symbol) -> []:
+def get_symbol(st: Stock) -> []:
     try:
         logging.info(" Aggregating symbol %s", symbol)
-        return sy.get()
+        return st.get_binance_symbol()
     except Exception:
         logging.error(" Failed to aggregate symbol %s", symbol, exc_info=True)
+        return False
+
+
+def symbol_exists(sy: str):
+    try:
+        logging.info(" Checking if symbol %s exists", symbol)
+        return symbol.symbol_exists(sy)
+    except ServerSelectionTimeoutError:
+        logging.error(" Failed to connect to the database", exc_info=True)
+        return False
+    except Exception:
+        logging.error(" Failed to check if symbol %s exists", symbol, exc_info=True)
         return False

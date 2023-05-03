@@ -32,7 +32,7 @@ def update_companies():
             result.append("The information of the ticker %s already exists" % ticker)
         else:
             df = st.get()
-            df['data'] = df.index
+            df['date'] = df.index
             df.rename(columns={'Open': 'open', 'High': 'high', 'Low': 'low',
                                'Adj Close': 'adjclose', 'Close': 'close', 'Volume': 'volume'}, inplace=True)
             data_dict = df.to_dict('records')
@@ -79,7 +79,7 @@ def aggregateCompaniesWithCustomFilter():
             if df.empty:
                 result.append("The information of the company %s was not updated because the data is empty" % ticker)
                 continue
-            df['data'] = df.index
+            df['date'] = df.index
             df.rename(columns={'Open': 'open', 'High': 'high', 'Low': 'low',
                                'Adj Close': 'adjclose', 'Close': 'close', 'Volume': 'volume'}, inplace=True)
             data_dict = df.to_dict('records')
@@ -120,7 +120,7 @@ def aggregateAllHistorical():
                 end_date = start_date + timedelta(days=730)
                 print("Start date: %s, end date: %s" % (start_date, end_date))
                 df = st.get(start_date, end_date)
-                df['data'] = df.index
+                df['date'] = df.index
                 df.rename(columns={'Open': 'open', 'High': 'high', 'Low': 'low',
                                    'Adj Close': 'adjclose', 'Close': 'close', 'Volume': 'volume'}, inplace=True)
                 data_dict = df.to_dict('records')
