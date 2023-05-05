@@ -49,20 +49,20 @@ def get_symbols(symbol_regex: None):
 
 def get_symbol(st: Stock) -> []:
     try:
-        logging.info(" Aggregating symbol %s", symbol)
+        logging.info(" Aggregating symbol %s", st.symbol)
         return st.get_binance_symbol()
     except Exception:
-        logging.error(" Failed to aggregate symbol %s", symbol, exc_info=True)
+        logging.error(" Failed to aggregate symbol %s", st.symbol, exc_info=True)
         return False
 
 
 def symbol_exists(sy: str):
     try:
-        logging.info(" Checking if symbol %s exists", symbol)
+        logging.info(" Checking if symbol %s exists", sy)
         return symbol.symbol_exists(sy)
     except ServerSelectionTimeoutError:
         logging.error(" Failed to connect to the database", exc_info=True)
         return False
     except Exception:
-        logging.error(" Failed to check if symbol %s exists", symbol, exc_info=True)
+        logging.error(" Failed to check if symbol %s exists", sy, exc_info=True)
         return False

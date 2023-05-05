@@ -21,7 +21,7 @@ def get_symbols(symbol_regex=None):
     gives us the data from the company from x year to y year with intervals of 1 day
     :return:
     """
-    result = binance.get_symbols(symbol_regex);
+    result = binance.get_symbols(symbol_regex)
     if result:
         return Response(json.dumps(result), status=200, mimetype='application/json')
     elif not result:
@@ -69,44 +69,45 @@ def aggregateAllHistoricalSymbol():
     result = []
     symbol = request.json['ticker']
     interval = request.json['interval']
-    logging.info(" Updating symbol %s" % symbol + "|| Start: " + str(datetime.now()))
+    logging.info(" Updating symbol %s" % symbol + " || Start: " + str(datetime.now()))
     if not binance.symbol_exists(symbol):
         return Response("Error, empty request json or symbol doesn't exist", status=400, mimetype='application/json')
     st = Stock(symbol)
+    st.set_interval(Restrictions[interval].value["key"])
 
-    if historical.stock_info_already_exists(symbol, st):
-        result.append("The information of the company %s already exists" % symbol)
-        logging.info("The information of the company %s already exists" % symbol)
+    if request.json['start_date'] is not None and request.json['start_date'] != "":
+        logging.info(" Start date: %s" % request.json['start_date'])
+        st.set_start_date(datetime.strptime(request.json['start_date'], '%Y-%m-%d'))
+        st.set_end_date(Restrictions[interval].get_interval_end_date(st.start_date))
     else:
-        if request.json['start_date'] is not None:
-            print("Start date: %s" % request.json['start_date'])
-            st.set_start_date(datetime.strptime(request.json['start_date'], '%Y-%m-%d'))
-            st.set_end_date(Restrictions[interval].get_interval_end_date(st.start_date))
-        else:
-            print("no start date")
-            start_date = st.get_binance_symbol().index[0]
-            st.set_start_date(start_date)
-            st.set_end_date(Restrictions[interval].get_interval_end_date(start_date))
-        st.set_interval(Restrictions[interval].value["key"])
+        start_date = st.get_binance_symbol().index[0]
+        st.set_start_date(start_date)
+        st.set_end_date(Restrictions[interval].get_interval_end_date(start_date))
+    st.set_interval(Restrictions[interval].value["key"])
 
-        logging.info("Updating company %s with start date %s, end date %s and interval %s" %
+    logging.info(" Updating company %s with start date %s, end date %s and interval %s" %
                      (symbol, st.start_date, st.end_date, st.interval))
+    if historical.stock_info_already_exists(symbol, st, True):
+        logging.info(" The information of the company %s already exists" % symbol)
+        return Response("Error, the information of the company %s already exists" % symbol, status=400, mimetype='application/json')
 
-        start_date = st.start_date
-        today = datetime.now()
-        while start_date < today:
-            print("Start date: %s, end date: %s" % (start_date, st.end_date))
-            df = st.get_binance_symbol(start_date, st.end_date)
+    start_date = st.start_date
+    end_date = st.end_date
+    st.end_date = (datetime.now())
+    today = datetime.now()
+    while start_date < today:
+            print("Start date: %s, end date: %s" % (start_date, end_date))
+            df = st.get_binance_symbol(start_date, end_date)
             if df is None or df.empty:
                 return Response("Error, empty response", status=500, mimetype='application/json')
             else:
                 df['date'] = df.index
                 data_dict = df.to_dict('records')
                 historical.aggregateCompanyCollection(st.ticker, data_dict, st)
-                start_date = st.end_date
-                st.end_date = Restrictions[interval].get_interval_end_date(start_date)
+                start_date = end_date
+                end_date = Restrictions[interval].get_interval_end_date(start_date)
 
-        result.append("The information of the company %s was updated" % symbol)
+    result.append("The information of the company %s was updated" % symbol)
     logging.info(" End: " + str(datetime.now()))
 
     return result

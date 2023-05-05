@@ -1,3 +1,5 @@
+import json
+
 from flask import Blueprint, request, jsonify, Flask, Response
 import logging
 import sys
@@ -25,7 +27,7 @@ def update_companies():
         if not ticker_exists(ticker):
             result.append("The ticker %s does not exist" % ticker)
             continue
-        logging.info(" Updating ticker %s" % ticker + "|| Start: " + str(datetime.now()))
+        logging.info(" Updating ticker %s" % ticker + " || \n Start: " + str(datetime.now()))
 
         st = Stock(ticker)
         if historical.stock_info_already_exists(ticker, st):
@@ -48,16 +50,10 @@ def get_company_by_name(name):
     return historical_controller.get_company(name)
 
 
-@company_routes.route('/getCompany/<string:regex>', methods=['GET'])
-def get_company_by_name(regex):
-    # TODO: Implement this, it should return a list of companies that match the regex
-    return "Not implemented yet"
-
-
 @company_routes.route('/getCompanyInterval/<string:name>/<string:interval>', methods=['GET'])
 def get_company_by_interval(name, interval):
     response = historical_controller.get_company_interval(name, interval)
-    return Response(response, status=200, mimetype='application/json')
+    return Response(json.dumps(response), status=200, mimetype='application/json')
 
 
 @company_routes.route('/aggregateCustomCompanies', methods=['POST'])
@@ -99,7 +95,7 @@ def aggregateCompaniesWithCustomFilter():
 
             result.append("The information of the company %s was updated" % ticker)
         logging.info(" End: " + str(datetime.now()))
-    return result
+    return Response(json.dumps(result), status=200, mimetype='application/json')
 
 
 @company_routes.route('/aggregateAllHistorical', methods=['POST'])

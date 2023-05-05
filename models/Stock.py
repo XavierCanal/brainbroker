@@ -83,8 +83,7 @@ class Stock:
                 start_date = self.start_date
             if end_date is None:
                 end_date = self.end_date
-
-            print(self.ticker, start_date, end_date, self.interval)
+            logging.info(" ticker: %s, start_date: %s, end_date: %s, interval: %s", self.ticker, start_date, end_date, self.interval)
             stock = yf2.download(self.ticker, start=start_date, end=end_date, interval=self.interval)
             print(stock)
             return stock

@@ -65,8 +65,8 @@ def update_symbols():
         client = Client(api_key, api_secret)
         exchange_info = client.get_exchange_info()['symbols']
         symbols = [symbol['symbol'] for symbol in exchange_info]
-        # Now we insert the df.index (array) into the collection
-        col.insert_one({"date": datetime.now(), "list": symbols})
+        # Now we update the list of symbols
+        col.update_one({}, {"$set": {"list": symbols, "date": datetime.now()}})
 
         return True
     except Exception:
