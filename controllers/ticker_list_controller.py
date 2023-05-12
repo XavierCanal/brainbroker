@@ -31,10 +31,10 @@ def ticker_exists(ticker_name):
         return False
 
 
-def get_tickers():
+def get_tickers(ticker_regex=None):
     try:
         logging.info(" Getting all tickers")
-        return ticker.get_tickers()
+        return ticker.get_tickers(ticker_regex)
     except Exception:
         logging.error(" Failed to get tickers", exc_info=True)
         return False

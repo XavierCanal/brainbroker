@@ -49,10 +49,10 @@ def get_symbols(symbol_regex: None):
 
 def get_symbol(st: Stock) -> []:
     try:
-        logging.info(" Aggregating symbol %s", st.symbol)
+        logging.info(" Aggregating symbol")
         return st.get_binance_symbol()
     except Exception:
-        logging.error(" Failed to aggregate symbol %s", st.symbol, exc_info=True)
+        logging.error(" Failed to aggregate symbol", exc_info=True)
         return False
 
 

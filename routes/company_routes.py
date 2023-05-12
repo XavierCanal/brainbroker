@@ -53,7 +53,7 @@ def get_company_by_name(name):
 @company_routes.route('/getCompanyInterval/<string:name>/<string:interval>', methods=['GET'])
 def get_company_by_interval(name, interval):
     response = historical_controller.get_company_interval(name, interval)
-    return Response(json.dumps(response), status=200, mimetype='application/json')
+    return jsonify(response)
 
 
 @company_routes.route('/aggregateCustomCompanies', methods=['POST'])

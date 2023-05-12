@@ -46,11 +46,13 @@ def find_ticker(ticker_name):
         return False
 
 
-def get_tickers():
+def get_tickers(ticker_regex=None):
     try:
         col = db_client.BrainBroker.ticker_list
         # We check if the collection exists with the index name inside the document
         if col.find_one({}):
+            if ticker_regex is not None:
+                return [ticker for ticker in col.find_one({})["list"] if ticker_regex in ticker]
             return col.find_one({})["list"]
         else:
             return False

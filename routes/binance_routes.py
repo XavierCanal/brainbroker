@@ -110,7 +110,7 @@ def aggregateAllHistoricalSymbol():
     result.append("The information of the company %s was updated" % symbol)
     logging.info(" End: " + str(datetime.now()))
 
-    return result
+    return Response(json.dumps(result), status=200, mimetype='application/json')
 
 
 @binance_routes.route('/updateCompletedStatus', methods=['POST'])

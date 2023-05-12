@@ -134,14 +134,18 @@ def get_custom_interval(name, interval):
                 if stock["info"]["interval"] == interval:
                     return stock
         else:
-            print("else")
             col = db_client.BrainBroker["historical_" + name]
-            data = col.find_one({"index": name})
-            if data:
-                for stock in data["data"]:
-                    if stock["info"]["interval"] == interval:
-                        return stock
-            return "Company not found"
+            print("historical_" + name)
+            cols = col.find({"index": name})
+            if cols:
+                for data in cols:
+                    print("data")
+                    for stock in data["data"]:
+                        print(stock["info"]["interval"] + " " + interval)
+                        if stock["info"]["interval"] == interval:
+                            print("true")
+                            return stock
+            return False
     except Exception:
         logging.error("Failed to get company", exc_info=True)
         return "Failed to get company"

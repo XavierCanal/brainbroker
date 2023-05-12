@@ -13,14 +13,14 @@ from controllers import binance_controller as binance
 
 app = Flask(__name__)
 
-app.register_blueprint(company_routes)
-app.register_blueprint(ticker_list_routes)
+app.register_blueprint(company_routes, url_prefix='/company')
+app.register_blueprint(ticker_list_routes, url_prefix='/tickerList')
 
 # Binance api registers
-app.register_blueprint(binance_routes)
+app.register_blueprint(binance_routes, url_prefix='/binance')
 
 # Plot routes
-app.register_blueprint(plot_routes)
+app.register_blueprint(plot_routes, url_prefix='/plot')
 
 
 def setupLogger():
