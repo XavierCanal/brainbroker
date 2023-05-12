@@ -23,22 +23,21 @@ def get_headlines_from_range(ticker, change_points):
     openai.api_key = os.getenv("OPENAI_API_KEY")
     json_data = transform_json(change_points)
     print(json_data)
-    return "Respond with events and the affected value that happened between the ranges given next. " \
-              "For he company or in the world that may have affected " \
-              "the company or the stock price. The company is " + ticker \
-              + ". The dates are: \n\n" + json_data + "\nThe format of the json of the date is: \n" \
-              + "{\nstart-date : end-date\n} \n\n Respond with this format: \n\n" \
-                "{\n{start-date: end-date} : {company-event: event related with the company or stock, global-event: " \
-                "important event that may affect the company or stock, " \
-                "company-event-affect: number (-10 to 10), global-event-affect: number (0-10) }\n}\n " \
-                "VERY IMPORTANT: Only send the json, if you encounter " \
-                "with any error, or you can't find any event, just fill with an empty string. " \
-                "Please provide notable events during each specified period. Remember that we are looking for " \
-                "GLOBAL events and COMPANY events and the affect values, represent if they mau have good impact (10) " \
-                "or bad impact (-10) in the company or stock."
-    # chat_completion = openai.ChatCompletion.create(model="gpt-3.5-turbo",
-    #                                                messages=[{"role": "system", "content": message}])
-    # return chat_completion.choices[0].message.content
+    message = "Respond with events and the affected value that happened between the given date ranges. " \
+           "These events may have affected" + ticker \
+        + ", either in terms of the company or the stock price. Please provide notable events during each " \
+          "specified period. The company is  " + ticker + ", and the dates are as follows:" + json_data + \
+        "\nThe format of the json of the date is: \n" \
+        + "{\nstart-date : end-date\n} \n\n Respond with this format: \n\n" \
+          "{\n{start-date: end-date} : {company-event: event related with the company or stock, global-event: " \
+          "important event that may affect the company or stock, " \
+          "company-event-affect: number (-10 to 10), global-event-affect: number (-10 to 10) }\n}\n " \
+          "If you encounter any errors or cannot find any events, please fill the respective fields with an" \
+          " empty string. Keep in mind that we are looking for both company-specific events and global " \
+          "events that may have influenced the company or stock price."
+    chat_completion = openai.ChatCompletion.create(model="gpt-3.5-turbo",
+                                                   messages=[{"role": "system", "content": message}])
+    return chat_completion.choices[0].message.content
 
 
 def transform_json(data):
