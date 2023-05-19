@@ -93,13 +93,16 @@ def get_changepoints(data, change_points=15):
 def get_changepoints_with_news(data, change_points=15):
     df = json_to_df(data)
     logging.info("Getting changepoints with news for data: " + str(df['ds']))
-    m = Prophet(seasonality_mode='multiplicative', n_changepoints=change_points)
+    m = Prophet(seasonality_mode='multiplicative', changepoint_range=1, changepoint_prior_scale=0.01,
+                n_changepoints=change_points)
     m.add_country_holidays(country_name='US')
     m.fit(df)
     forecast = m.predict()
     fig = m.plot(forecast)
     add_changepoints_to_plot(fig.gca(), m, forecast)
-    return m, m.changepoints
+    fig = plot_plotly(m, forecast)
+    plt.show()
+    return fig, m.changepoints
 
 
 def json_to_df(data):

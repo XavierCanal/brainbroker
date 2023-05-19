@@ -48,6 +48,7 @@ def get_changepoints_with_news(ticker, interval, change_points):
     hist = historical_controller.get_company_interval(ticker, interval)
     if not hist:
         return "Error, company not found"
-    m, change_points = Plot.get_changepoints_with_news(hist, change_points)
-    articles = News.get_headlines_from_range(ticker, change_points)
+    fig, change_points = Plot.get_changepoints_with_news(hist, change_points)
+    articles = News.get_headlines_from_range(ticker, change_points, fig)
+    News.stamp_news_to_plot(articles, fig)
     return articles

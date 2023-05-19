@@ -13,4 +13,4 @@ def get_company_interval(name, interval):
 
 
 def get_companies_custom_filter(args):
-    logging.info("Getting companies with custom filter %s" % args)
+    logging.info(" Getting companies with custom filter %s" % args)

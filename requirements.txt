@@ -84,3 +84,4 @@ plotly~=5.14.1
 Pillow~=9.5.0
 matplotlib~=3.7.1
 convertdate~=2.4.0
+openai~=0.27.6
