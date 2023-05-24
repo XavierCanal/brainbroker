@@ -9,9 +9,10 @@ from routes.ticker_list_routes import ticker_list_routes
 from routes.binance_routes import binance_routes
 from routes.plot_routes import plot_routes
 from controllers import binance_controller as binance
-
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 app.register_blueprint(company_routes, url_prefix='/company')
 app.register_blueprint(ticker_list_routes, url_prefix='/tickerList')
