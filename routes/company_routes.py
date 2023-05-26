@@ -3,7 +3,7 @@ import json
 from flask import Blueprint, request, jsonify, Flask, Response
 import logging
 import sys
-
+from controllers import binance_controller as binance
 from models.enums.yahoo_data_restrictions import Restrictions
 from utils.mongo import historical
 from controllers import historical_controller
@@ -56,7 +56,7 @@ def get_company_by_interval(name, interval):
     return jsonify(response)
 
 
-@company_routes.route('/aggregateCustomCompanies', methods=['POST'])
+@company_routes.route('/aggregateCustom', methods=['POST'])
 def aggregateCompaniesWithCustomFilter():
     """
     :param tickers: List of companies to update
@@ -138,3 +138,17 @@ def aggregateAllHistorical():
             result.append("The information of the company %s was updated" % ticker)
         logging.info(" End: " + str(datetime.now()))
     return result
+
+
+@company_routes.route('/getTickerType/<string:ticker>', methods=['GET'])
+def getTickerType(ticker):
+    """
+    This function will return the type of the ticker (company or binance)
+    :return:
+    """
+    if ticker_exists(ticker):
+        return Response(json.dumps({"type": "company"}), status=200, mimetype='application/json')
+    elif binance.symbol_exists(ticker):
+        return Response(json.dumps({"type": "binance"}), status=200, mimetype='application/json')
+    else:
+        return Response(json.dumps({"type": "none"}), status=404, mimetype='application/json')

@@ -50,5 +50,17 @@ def get_changepoints_with_news(ticker, interval, change_points):
         return "Error, company not found"
     fig, change_points = Plot.get_changepoints_with_news(hist, change_points)
     articles = News.get_headlines_from_range(ticker, change_points, fig)
-    News.stamp_news_to_plot(articles, fig)
-    return articles
+    figure_json = News.stamp_news_to_plot(articles, fig)
+    return {"articles": articles, "fig": figure_json}
+
+
+def get_recent_news(ticker):
+    logging.info(" Getting recent news for: " + ticker)
+    articles = News.get_recent_news(ticker)
+    evaluation = get_headlines_evaluation(articles, ticker)
+    return articles, evaluation
+
+
+def get_headlines_evaluation(articles, ticker):
+    evaluation = News.get_headlines_evaluation(articles, ticker)
+    return evaluation

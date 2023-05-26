@@ -75,6 +75,7 @@ def generate_forecast(data):
     fig = plot_plotly(m, forecast)
     fig.update_layout(template='seaborn')
     pio.show(fig)
+    
     return model_to_json(m)
 
 

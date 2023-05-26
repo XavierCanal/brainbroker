@@ -30,31 +30,32 @@ def get_symbols(symbol_regex=None):
         return Response(json.dumps(result), status=404, mimetype='application/json')
 
 
-@binance_routes.route('/aggregateSymbol', methods=['POST'])
+@binance_routes.route('/aggregateCustom', methods=['POST'])
 def aggregate_symbol():
     """
     :param symbol: Symbol to update
     This function will update the companies in the database, using binance, we use aggregate_symbol, that
     gives us the data from the company from x year to y year with intervals of 1 day
     """
-    if binance.symbol_exists(request.json['ticker']) is False:
+    if binance.symbol_exists(request.json['tickers']) is False:
         return Response("Error, empty request json or symbol doesn't exist", status=400, mimetype='application/json')
     result = []
-    symbol = Stock(request.json['ticker'], request.json['start_date'], request.json['end_date'], request.json['interval'])
-    logging.info(" Updating symbol %s" % symbol + "|| Start: " + str(datetime.now()))
-    if not historical.stock_info_already_exists(symbol.ticker, symbol):
-        df = binance.get_symbol(symbol)
-        if df is None or df.empty:
-            return Response("Error, empty response", status=500, mimetype='application/json')
+    for symbol in request.json['tickers']:
+        symbol = Stock(symbol, request.json['start_date'], request.json['end_date'], request.json['interval'])
+        logging.info(" Updating symbol %s" % symbol + "|| Start: " + str(datetime.now()))
+        if not historical.stock_info_already_exists(symbol.ticker, symbol):
+            df = binance.get_symbol(symbol)
+            if df is None or df.empty:
+                return Response("Error, empty response", status=500, mimetype='application/json')
+            else:
+                df['date'] = df.index
+                data_dict = df.to_dict('records')
+                outcome = historical.aggregateCompany(symbol.ticker, data_dict, symbol)
+                if outcome is False:
+                    return Response("Error", status=500, mimetype='application/json')
+                result.append(outcome)
         else:
-            df['date'] = df.index
-            data_dict = df.to_dict('records')
-            outcome = historical.aggregateCompany(symbol.ticker, data_dict, symbol)
-            if outcome is False:
-                return Response("Error", status=500, mimetype='application/json')
-            result.append(outcome)
-    else:
-        result.append("The information of the symbol %s already exists" % symbol)
+            result.append("The information of the symbol %s already exists" % symbol)
     logging.info(" End: " + str(datetime.now()))
     return result
 

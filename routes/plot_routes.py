@@ -81,7 +81,20 @@ def get_changepoints_news():
         if not stock or not interval:
             return Response("Error, empty request json or symbol doesn't exist", status=400, mimetype='application/json')
         result = plot_controller.get_changepoints_with_news(stock, interval, change_points)
-        return Response(result, status=200, mimetype='application/json')
+        print(result)
+        return result
     except Exception as e:
         logging.error("Error in get_changepoints_news: " + str(e))
         return Response("Error in get_changepoints_news: " + str(e), status=500, mimetype='application/json')
+
+
+@plot_routes.route('/getNews/<string:ticker>', methods=['GET'])
+def get_news(ticker):
+    try:
+        if not ticker:
+            return Response("Error, empty request json or symbol doesn't exist", status=400, mimetype='application/json')
+        result, evaluation = plot_controller.get_recent_news(ticker)
+        return Response((result, evaluation), status=200, mimetype='application/json')
+    except Exception as e:
+        logging.error("Error in get_news: " + str(e))
+        return Response("Error in get_news: " + str(e), status=500, mimetype='application/json')
