@@ -92,7 +92,7 @@ def stamp_news_to_plot(headlines_string, figure):
         figure.add_trace(annotation)
         figure.add_trace(annotation2)
 
-    figure.update_layout(template='seaborn', hovermode="closest")
+    figure.update_layout(template='seaborn', hovermode="closest", width=1200, height=900)
     figure_json = json.dumps(figure, cls=PlotlyJSONEncoder)
     return figure_json
 
@@ -112,22 +112,22 @@ def transform_json(data):
 
 
 def get_recent_news(q):
-    top_related_headlines = newsapi.get_top_headlines(q=q,
-                                                      category='business',
-                                                      language='en')
-    if top_related_headlines.get("totalResult") is not None:
-        return json.dumps(top_related_headlines.get("articles"))
+    top_related_headlines = newsapi.get_top_headlines(q=q, category='business', language='en')
+    if top_related_headlines.get("totalResults") != 0:
+        return json.dumps(top_related_headlines)
 
-    top_related_headlines = newsapi.get_everything(q=q,
-                                                   language='en',
-                                                   page_size=10,
+    top_related_headlines = newsapi.get_everything(q=q, language='en', page_size=5,
                                                    from_param=(datetime.datetime.now() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'),
-                                                   to=datetime.datetime.today().strftime('%Y-%m-%d')
-                                                   )
+                                                   to=datetime.datetime.today().strftime('%Y-%m-%d'))
+    print(top_related_headlines)
+    if top_related_headlines.get("totalResults") != 0:
+        return json.dumps(top_related_headlines)
+    top_related_headlines = newsapi.get_top_headlines(language='en', page_size=5)
     return json.dumps(top_related_headlines)
 
 
 def get_headlines_evaluation(articles, ticker):
+    logging.info(" Getting headlines evaluation for " + ticker)
     """
     This function will get the headlines and will valuate them
     article json example:
@@ -155,20 +155,22 @@ def get_headlines_evaluation(articles, ticker):
     """
     # We will create a list of the titles and descriptions
     articles = json.loads(articles)
-    json_str = "{"
+    json_str = "["
     for article in articles["articles"]:
-        json_str += "'article': { \n title: " + article["title"] + "'description: '" + article["description"] + "},"
-    json_str += "}"
+        json_str += "{ \n \"title\": \"" + article["title"] + "\",\"description\":\"" + article["description"] + "\"},"
+    # We remove the last comma
+    json_str = json_str[:-1]
+    json_str += "]"
 
     # We prepare the message with the explanation of what should gpt do
     message = "Please evaluate the potential impact of the following news articles on " + ticker + ". Assign a value between -10 " \
-              "and 10 to each article based on its title and description. If you're unable to assess the article's impact," \
-              "you can assign a value of 0. Please provide the response in the following format:" \
-                "{'article_title': value, 'conclusion': (conclusion text)} where value is a number between -10 and 10."\
-                "Please note that I am specifically " \
-                "interested in evaluating the impact of these articles on IBM and not on any other company or industry." \
-                "remember, the only response must be a json, nothing more."\
-                "Thank you! \nArticles: \n" + json_str
+                                                                                                   "and 10 to each article based on its title and description. If you're unable to assess the article's impact," \
+                                                                                                   "you can assign a value of 0. Please provide the response in the following array json format:" \
+                                                                                                   "[article: {value: value (number), conclusion: (conclusion text: string)}] where value is a number between -10 and 10." \
+                                                                                                   "Please note that I am specifically " \
+                                                                                                   "interested in evaluating the impact of these articles on IBM and not on any other company or industry." \
+                                                                                                   "remember, the only response must be a json, nothing more." \
+                                                                                                   "Thank you! \nArticles: \n" + json_str
     print(message)
     # We send the message to gpt and we get the response
     chat_completion = openai.ChatCompletion.create(model="gpt-3.5-turbo",

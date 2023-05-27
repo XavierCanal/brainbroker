@@ -94,7 +94,7 @@ def get_news(ticker):
         if not ticker:
             return Response("Error, empty request json or symbol doesn't exist", status=400, mimetype='application/json')
         result, evaluation = plot_controller.get_recent_news(ticker)
-        return Response((result, evaluation), status=200, mimetype='application/json')
+        return {"result": result, "evaluation": evaluation}
     except Exception as e:
         logging.error("Error in get_news: " + str(e))
         return Response("Error in get_news: " + str(e), status=500, mimetype='application/json')
