@@ -112,7 +112,7 @@ def transform_json(data):
 
 
 def get_recent_news(q):
-    top_related_headlines = newsapi.get_top_headlines(q=q, category='business', language='en')
+    top_related_headlines = newsapi.get_top_headlines(q=q, category='business', language='en', page_size=5)
     if top_related_headlines.get("totalResults") != 0:
         return json.dumps(top_related_headlines)
 

@@ -28,7 +28,7 @@ def get_plot_forecast_components():
         if not stock or not interval:
             return Response("Error, empty request json or symbol doesn't exist", status=400, mimetype='application/json')
         result = plot_controller.get_plot_forecast_components(stock, interval)
-        return Response(result, status=200, mimetype='application/json')
+        return result
     except Exception as e:
         logging.error("Error in get_plot_forecast_components: " + str(e))
         return Response("Error in get_plot_forecast_components: " + str(e), status=500, mimetype='application/json')
@@ -41,7 +41,7 @@ def generate_cross_validation_forecast():
         if not stock or not interval:
             return Response("Error, empty request json or symbol doesn't exist", status=400, mimetype='application/json')
         result = plot_controller.generate_cross_validation_forecast(stock, interval)
-        return Response(result, status=200, mimetype='application/json')
+        return result
     except Exception as e:
         logging.error("Error in generate_cross_validation_forecast: " + str(e))
         return Response("Error in generate_cross_validation_forecast: " + str(e), status=500, mimetype='application/json')
@@ -54,7 +54,7 @@ def generate_forecast():
         if not stock or not interval:
             return Response("Error, empty request json or symbol doesn't exist", status=400, mimetype='application/json')
         result = plot_controller.generate_forecast(stock, interval)
-        return Response(result, status=200, mimetype='application/json')
+        return result
     except Exception as e:
         logging.error("Error in generate_forecast: " + str(e))
         return Response("Error in generate_forecast: " + str(e), status=500, mimetype='application/json')

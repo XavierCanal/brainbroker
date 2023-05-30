@@ -1,14 +1,14 @@
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import plotly.io as pio
-from datetime import datetime, timedelta
 import logging
 import pandas as pd
-from pandas import json_normalize, read_json
+import io
+import base64
 from prophet import Prophet
 from prophet.diagnostics import cross_validation
 from prophet.plot import plot_cross_validation_metric, add_changepoints_to_plot, plot_plotly
-from prophet.serialize import model_to_json, model_from_json
+from prophet.serialize import model_to_json
 
 
 def generate_plot_candlestick(data):
@@ -50,8 +50,12 @@ def generate_forecast_components(data):
     future = m.make_future_dataframe(periods=365)
     forecast = m.predict(future)
     fig = m.plot_components(forecast)
-    fig.show()
-    return model_to_json(m)
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png')
+    buf.seek(0)
+    encoded_image = base64.b64encode(buf.getvalue()).decode('utf-8')
+
+    return {'image_data': encoded_image}
 
 
 def generate_cross_validation_forecast(data):
@@ -61,8 +65,12 @@ def generate_cross_validation_forecast(data):
     m.fit(df)
     df_cv = cross_validation(m, initial='365 days', period='30 days', horizon='90 days')
     fig = plot_cross_validation_metric(df_cv, metric='mape')
-    fig.show()
-    return model_to_json(m)
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png')
+    buf.seek(0)
+    encoded_image = base64.b64encode(buf.getvalue()).decode('utf-8')
+
+    return {'image_data': encoded_image}
 
 
 def generate_forecast(data):
@@ -74,9 +82,12 @@ def generate_forecast(data):
     forecast = m.predict(future)
     fig = plot_plotly(m, forecast)
     fig.update_layout(template='seaborn')
-    pio.show(fig)
-    
-    return model_to_json(m)
+    buf = io.BytesIO()
+    pio.write_image(fig, buf, format='png')
+    buf.seek(0)
+    encoded_image = base64.b64encode(buf.getvalue()).decode('utf-8')
+
+    return {'image_data': encoded_image}
 
 
 def get_changepoints(data, change_points=15):
